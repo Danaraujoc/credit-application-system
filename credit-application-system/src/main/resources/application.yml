@@ -3,6 +3,9 @@ spring:
     url: jdbc:h2:mem:credit_application_system_db
     username: daniel
     password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
   h2:
     console:
       enabled: true
@@ -10,3 +13,4 @@ spring:
       settings:
         trace: false
         web-allow-others: false
+
