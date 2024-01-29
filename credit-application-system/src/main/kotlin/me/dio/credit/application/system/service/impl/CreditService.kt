@@ -22,7 +22,18 @@ class CreditService(
         TODO()
     }
 
-    override fun findByCreditCode(creditCode: UUID): Credit {
-        TODO()
+    override fun findByCreditCode(customerId: Long, creditCode: UUID): Credit {
+        val credit: Credit = (this.creditRepository.findByCreditCode(creditCode)
+            ?: throw RuntimeException("Credit code $creditCode not found"))
+        return if (credit.customer?.id == customerId) credit else throw RuntimeException("Contact admin")
+
+        /*
+        if (credit.customer?.id == customerId){
+            return credit
+            }else {
+            throw RuntimeException("Contact admin)
+            }
+         */
+
     }
 }
