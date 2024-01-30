@@ -12,7 +12,7 @@ data class CreditDto(
     val customerId: Long
 ) {
 
-    fun toEntity(): Credit = Credit (
+    fun toEntity(): Credit = Credit(
         creditValue = this.creditValue,
         dayFirstInstallment = this.dayFirstOfInstallment,
         numberOfInstallments = this.numberOfInstallments,
