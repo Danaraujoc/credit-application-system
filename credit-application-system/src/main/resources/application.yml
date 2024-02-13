@@ -16,3 +16,8 @@ spring:
         trace: false
         web-allow-others: false
 
+springdoc:
+  swaggger-ui:
+    path: /swagger-ui.html
+
+
