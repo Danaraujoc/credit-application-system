@@ -6,7 +6,7 @@ import me.dio.credit.application.system.enummeration.Status
 import java.math.BigDecimal
 import java.util.UUID
 
-class CreditView(
+data class CreditView(
     val creditCode: UUID,
     val creditValue: BigDecimal,
     val numberOfInstallment: Int,

@@ -4,8 +4,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.just
-import io.mockk.runs
 import io.mockk.verify
 import me.dio.credit.application.system.entity.Address
 import me.dio.credit.application.system.entity.Customer
@@ -15,7 +13,6 @@ import me.dio.credit.application.system.service.impl.CustomerService
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.test.context.ActiveProfiles
 import java.math.BigDecimal
 import java.util.*
 
@@ -76,7 +73,7 @@ class CustomerServiceTest {
         val fakeId: Long = Random().nextLong()
         val fakeCustomer: Customer = buildCustomer(id = fakeId)
         every { customerRepository.findById(fakeId) } returns Optional.of(fakeCustomer)
-        every { customerRepository.delete(fakeCustomer) } just runs
+        every { customerRepository.delete(fakeCustomer) }
         //when
         customerService.delete(fakeId)
         //then

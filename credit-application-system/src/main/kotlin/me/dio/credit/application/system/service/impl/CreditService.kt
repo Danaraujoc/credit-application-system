@@ -14,7 +14,9 @@ class CreditService(
     private val customerService: CustomerService
 ) : ICreditService {
     override fun save(credit: Credit): Credit {
-        this.validDayFirstInstallment(credit.dayFirstInstallment)
+        if (!validDayFirstInstallment(credit.dayFirstInstallment)) {
+            throw BusinessException("Invalid Date")
+        }
         credit.apply {
             customer = customerService.findById(credit.customer?.id!!)
         }
@@ -27,7 +29,13 @@ class CreditService(
     override fun findByCreditCode(customerId: Long, creditCode: UUID): Credit {
         val credit: Credit = (this.creditRepository.findByCreditCode(creditCode)
             ?: throw BusinessException("Credit code $creditCode not found"))
-        return if (credit.customer?.id == customerId) credit else throw IllegalArgumentException("Contact admin")
+
+        return if (credit.customer?.id == customerId)
+            credit
+        else
+            throw IllegalArgumentException("Credit code $creditCode not found for customer $customerId")
+
+        //return if (credit.customer?.id == customerId) credit else throw IllegalArgumentException("Contact admin")
 
         /*
         if (credit.customer?.id == customerId){
@@ -39,9 +47,8 @@ class CreditService(
 
     }
 
-    private fun validDayFirstInstallment(dayFirstInstallment: LocalDate): Boolean {
-        return if (dayFirstInstallment.isBefore(LocalDate.now().plusMonths(3))) true
-        else throw BusinessException("Invalid Date")
+    private fun validDayFirstInstallment(dayFirstInstallment: LocalDate?): Boolean {
+        return dayFirstInstallment != null && !dayFirstInstallment.isBefore(LocalDate.now().plusMonths(3))
     }
-
 }
+

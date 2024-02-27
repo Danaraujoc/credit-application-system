@@ -8,6 +8,7 @@ import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import java.time.DateTimeException
 import java.time.LocalDateTime
 
 @RestControllerAdvice
@@ -79,6 +80,20 @@ class RestExceptionHandler {
                     status = HttpStatus.BAD_REQUEST.value(),
                     exception = ex.javaClass.toString(),
                     details = mutableMapOf(ex.cause.toString() to ex.message)
+                )
+            )
+    }
+
+    @ExceptionHandler(DateTimeException::class)
+    fun handleDateTimeException(ex: DateTimeException): ResponseEntity<ExceptionDetails> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(
+                ExceptionDetails(
+                    title = "Bad Request! Invalid date format",
+                    timestamp = LocalDateTime.now(),
+                    status = HttpStatus.BAD_REQUEST.value(),
+                    exception = ex.javaClass.toString(),
+                    details = mutableMapOf("error" to ex.message)
                 )
             )
     }
