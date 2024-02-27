@@ -1,3 +1,5 @@
+
+
 <h1>request-credit-system</h1>
 <p align="center">API Rest para um Sistema de Analise de Solicitação de Crédito</p>
 <p align="center">
@@ -20,6 +22,12 @@
         <img src="https://img.shields.io/badge/Flyway-v9.5.1-red.svg">
     </a>
 </p>
+
+<h3>Observações sobre entrega de Desafio de Projeto</h3>
+<p>Essa é uma implementação de código do Curso Backend com Kotlin da NTT DATA em parceira com DIO onde foi desenvolvida uma API REST com Kotlin. No desafio de projeto foram implementadas algumas classes de Teste para verificar a integridade e consistência da API desenvolvida, algumas modificações tiveram que ser feitas no código com relação ao código original para melhora execução de alguns testes. Abaixo está link do código fonte original para conhecimento, dúvidas e demais orientações do projeto</p>
+
+
+<p><a href="https://github.com/cami-la/credit-application-system">Fonte: https://github.com/cami-la/credit-application-system</a></p>
 
 <h3>Descrição do Projeto</h3>
 <p><a href="https://gist.github.com/cami-la/560b455b901778391abd2c9edea81286">https://gist.github.com/cami-la/560b455b901778391abd2c9edea81286</a></p>
