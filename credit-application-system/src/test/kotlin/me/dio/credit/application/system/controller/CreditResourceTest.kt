@@ -1,9 +1,11 @@
 package me.dio.credit.application.system.controller
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import me.dio.credit.application.system.dto.request.CreditDto
 import me.dio.credit.application.system.dto.request.CustomerDto
+import me.dio.credit.application.system.dto.response.CreditView
+import me.dio.credit.application.system.entity.Customer
+import me.dio.credit.application.system.enummeration.Status
 import me.dio.credit.application.system.repository.CreditRepository
 import me.dio.credit.application.system.repository.CustomerRepository
 import org.junit.jupiter.api.AfterEach
@@ -135,44 +137,43 @@ class CreditResourceTest {
             .andExpect(
                 MockMvcResultMatchers.jsonPath("$[0].numberOfInstallments").value(creditDto.numberOfInstallments)
             )
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].customer.id").value(customer.id))
-            //.andExpect(MockMvcResultMatchers.jsonPath("$[0].dayFirstInstallment").doesNotExist()) // Removido para refletir a remoção do campo
             .andDo(MockMvcResultHandlers.print())
+
     }
 
-
     @Test
-    fun `should get credit by credit code and customer id return 200 status`() {
-        //deve obter crédito por código de crédito e id do cliente retornar o status 200
-        // given
+    fun `find credit by credit code and customer id and return status 200`() {
+        // Given
         val customerDto: CustomerDto = builderCustomerDto()
         val customer = customerRepository.save(customerDto.toEntity())
 
         val creditDto: CreditDto = buildCreditDto(customerId = customer.id)
         val valueAsString: String = objectMapper.writeValueAsString(creditDto)
-        val result = mockMvc.perform(
+        val resultSave = mockMvc.perform(
             MockMvcRequestBuilders.post(URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(valueAsString)
         )
 
-        val responseJson: JsonNode = objectMapper.readTree(result.andReturn().response.contentAsString)
-        val creditCodeString: String = responseJson["creditCode"].asText()
-        val creditCode: UUID = UUID.fromString(creditCodeString)
+        val creditCode = creditRepository.findAll().first().creditCode
 
-        // when
-        // then
-        mockMvc.perform(
-            MockMvcRequestBuilders.get("$URL/$creditCode")
-                .param("customerId", customer.id.toString()) // Adiciona o parâmetro customerId
+        // When
+        val result = mockMvc.perform(
+            MockMvcRequestBuilders.get("$URL/$creditCode?customerId=${customer.id}")
                 .accept(MediaType.APPLICATION_JSON)
         )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.creditValue").value(creditDto.creditValue.toDouble()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfInstallments").value(creditDto.numberOfInstallments))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.customer.id").value(customer.id))
-            .andDo(MockMvcResultHandlers.print())
 
+        // Then
+        val expectedCreditView = buildCreditView(customer, creditCode)
+
+        result.andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.creditCode").value(expectedCreditView.creditCode.toString()))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.creditValue").value(expectedCreditView.creditValue.toDouble()))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfInstallment").value(expectedCreditView.numberOfInstallment))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.status").value(expectedCreditView.status.toString()))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.emailCustomer").value(expectedCreditView.emailCustomer))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.incomeCustomer").value(expectedCreditView.incomeCustomer))
+            .andDo(MockMvcResultHandlers.print())
     }
 
     @Test
@@ -227,4 +228,15 @@ class CreditResourceTest {
         zipCode = zipCode,
         street = street
     )
+
+    fun buildCreditView(customer: Customer, creditCode: UUID = UUID.randomUUID()): CreditView {
+        return CreditView(
+            creditCode = creditCode,
+            creditValue = BigDecimal.valueOf(1000),
+            numberOfInstallment = 12,
+            status = Status.IN_PROGRESS,
+            emailCustomer = customer.email,
+            incomeCustomer = customer.income
+        )
+    }
 }
